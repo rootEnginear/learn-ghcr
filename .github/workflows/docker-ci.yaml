@@ -30,4 +30,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: $GIT_BRANCH/$GIT_HASH
+          tags: ${{ $GIT_BRANCH }}/${{ $GIT_HASH }}
