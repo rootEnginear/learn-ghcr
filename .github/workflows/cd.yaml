@@ -1,0 +1,25 @@
+name: Deploy Latest Docker Image
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  deploy-on-google-cloud:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: SSH
+        uses: "google-github-actions/ssh-compute@v1"
+        with:
+          instance_name: "learning-dev-ops"
+          zone: "asia-southeast1-b"
+          ssh_private_key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          command: |
+            sudo docker stop ghcr.io/rootenginear/learn-ghcr:latest
+            sudo docker pull ghcr.io/rootenginear/learn-ghcr:latest
+            sudo docker run -d -p 80:3000 -p 443:3000 ghcr.io/rootenginear/learn-ghcr:latest
